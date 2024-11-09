@@ -14,20 +14,15 @@ class ViewController: UIViewController {
         return animator
     }()
     private(set) lazy var resultView: UIView = {
-        let view = UIView(frame: CGRect(x: view.layoutMargins.left, y: 100, width: 70, height: 70))
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .systemBlue
         view.layer.cornerRadius = 10
         return view
     }()
     private(set) lazy var slider: UISlider = {
-        let slider = UISlider(
-            frame: CGRect(
-                x: view.layoutMargins.left,
-                y: 220,
-                width: view.frame.maxX - view.layoutMargins.left - view.layoutMargins.right,
-                height: 30
-            )
-        )
+        let slider = UISlider()
+        slider.translatesAutoresizingMaskIntoConstraints = false
         slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
         return slider
     }()
@@ -35,13 +30,35 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
         view.addSubview(resultView)
         view.addSubview(slider)
         
+        let heightConstaint = resultView.heightAnchor.constraint(equalToConstant: 70)
+        let widthConstraint = resultView.widthAnchor.constraint(equalToConstant: 70)
+        let leadingConstraint = resultView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor)
+        let trailingConstraint = resultView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
+        
+        NSLayoutConstraint.activate([
+            resultView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            leadingConstraint,
+            heightConstaint,
+            widthConstraint,
+            slider.topAnchor.constraint(equalTo: view.topAnchor, constant: 220),
+            slider.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            slider.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        ])
+        
+       
         animator.addAnimations {
-            self.resultView.transform = CGAffineTransform(rotationAngle: .pi / 2).scaledBy(x: 1.5, y: 1.5)
-            self.resultView.center.x = self.view.frame.maxX - self.view.layoutMargins.right - (self.resultView.frame.width / 2)
+            self.resultView.transform = CGAffineTransform(rotationAngle: .pi / 2)
+            
+            heightConstaint.constant *= 1.5
+            widthConstraint.constant *= 1.5
+            
+            leadingConstraint.isActive = false
+            trailingConstraint.isActive = true
+        
+            self.view.layoutIfNeeded()
         }
     }
     
